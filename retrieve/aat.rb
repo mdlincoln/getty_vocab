@@ -14,15 +14,14 @@ module RDF::Value
 	end
 end
 
-FILES = Dir.glob("explicit/*.nt")
-SIZE = 10410177
+FILE = "AATOut_Full.nt"
+SIZE = 11613807
 database = Mongo::MongoClient.new["getty"]["aat_triples"]
 
 prog_bar = ProgressBar.create(:title => "Records imported", :starting_at => 0, :total => SIZE, :format => '%c |%b>>%i| %p%% %e')	# => Create a progress bar
 
 
-FILES.each do |file|
-RDF::NTriples::Reader.open(file) do |reader|
+RDF::NTriples::Reader.open(FILE) do |reader|
 	reader.each_statement do |statement|
 		object = {
 				:subject => { :value => statement.subject.to_s, :type => statement.subject.is_type },
@@ -32,5 +31,4 @@ RDF::NTriples::Reader.open(file) do |reader|
 		database.insert(object)
 		prog_bar.increment
 	end
-end
 end
