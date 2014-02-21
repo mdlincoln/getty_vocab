@@ -1,7 +1,16 @@
+#######
+#
+# Script for importing AAT NT dump (found at 
+# http://vocab.getty.edu/) to MongoDB
+#
+#######
+
+
 require "mongo"
 require "ruby-progressbar"
 require "rdf"
 
+# Helper method for determining RDF statement type
 module RDF::Value
 	def is_type
 		if self.uri?

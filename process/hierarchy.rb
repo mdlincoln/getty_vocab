@@ -1,3 +1,9 @@
+#######
+#
+# Create a hierarchical JSON file from a given AAT root
+#
+#######
+
 require "mongo"
 require "json"
 
@@ -45,10 +51,12 @@ def get_hash(object_uri)
 	label = get_label(object_uri)
 	puts "#{label}, getting children"
 	children_array = get_children(object_uri,[])
+	# If a given node has no children, only add its label to the hash
 	if children_array.count == 0
 		object_hash = {
 			:name => label,
 		}
+	# If a given node has children, add them to an array
 	else
 		object_hash = {
 			:name => label,
