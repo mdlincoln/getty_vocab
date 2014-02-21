@@ -35,7 +35,7 @@ def get_children(parent,array)
 		return array
 	else
 		children.each do |child|
-			array << get_hash(child)
+			array << get_hash(child["object"]["value"])
 		end
 		return array
 	end
