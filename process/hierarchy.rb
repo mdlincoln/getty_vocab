@@ -3,12 +3,12 @@ require "json"
 
 AAT = Mongo::MongoClient.new["getty"]["aat_triples"]
 OUTPUT_PATH = "process/aat-hierarchy.json"
-ROOT = "http://vocab.getty.edu/aat/300010358" # "Material"
+ROOT = "http://vocab.getty.edu/aat/300111078" # "Styles, periods, and cultures by region"
 
 # Useful URIs
 GETTY_PREF_LABEL = "http://vocab.getty.edu/ontology#prefLabelGVP"
 GETTY_LABEL_LITERAL = "http://vocab.getty.edu/ontology#term"
-SKOS_NARROWER = "http://www.w3.org/2004/02/skos/core#narrower"
+GETTY_NARROWER = "http://vocab.getty.edu/ontology#narrower"
 
 # Get the literal name of a Getty term
 def get_label(object_uri)
@@ -27,7 +27,7 @@ end
 def get_children(parent,array)
 	children = AAT.find({
 		"subject.value" => parent,
-		"predicate.value" => SKOS_NARROWER
+		"predicate.value" => GETTY_NARROWER
 		})
 
 	# Return nil if no children
