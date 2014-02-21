@@ -62,6 +62,6 @@ puts "Starting from #{ROOT}"
 aat_hash = get_hash(ROOT)
 print "Writing JSON..."
 File.open(OUTPUT_PATH,"w") do |f|
-	f.write(aat_hash.to_json)
+	f.write(JSON.fast_generate(aat_hash))
 end
 puts "done."
