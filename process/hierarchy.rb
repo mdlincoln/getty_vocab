@@ -1,7 +1,7 @@
 require "mongo"
 require "json"
 
-$AAT = Mongo::MongoClient.new["getty"]["aat_triples"]
+AAT = Mongo::MongoClient.new["getty"]["aat_triples"]
 OUTPUT_PATH = "process/aat-hierarchy.json"
 ROOT = "http://vocab.getty.edu/aat/300010358" # "Material"
 
@@ -12,11 +12,11 @@ SKOS_NARROWER = "http://www.w3.org/2004/02/skos/core#narrower"
 
 # Get the literal name of a Getty term
 def get_label(object_uri)
-	label_triple = $AAT.find_one({
+	label_triple = AAT.find_one({
 		"subject.value" => object_uri,
 		"predicate.value" => GETTY_PREF_LABEL
 		})["object"]["value"]
-	literal_label = $AAT.find_one({
+	literal_label = AAT.find_one({
 		"subject.value" => label_triple,
 		"predicate.value" => GETTY_LABEL_LITERAL
 		})["object"]["value"]
@@ -25,7 +25,7 @@ end
 
 # Recursive method to find narrower
 def get_children(parent,array)
-	children = $AAT.find({
+	children = AAT.find({
 		"subject.value" => parent,
 		"predicate.value" => SKOS_NARROWER
 		})
