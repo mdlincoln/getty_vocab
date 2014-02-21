@@ -1,4 +1,4 @@
-scrape_getty
+getty_vocab
 ============
 
 Tools for storing facets of the Getty's LOD vocabularies in MongoDB.
