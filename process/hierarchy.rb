@@ -8,10 +8,11 @@ require "mongo"
 require "json"
 
 AAT = Mongo::MongoClient.new["getty"]["aat_triples"]
-AAT.ensureIndex({
-	"subject.value" => 1,
-	"subject.predicate" => 1
-	})
+puts "Creating subject/predicate compound index. This may take a while..."
+AAT.ensure_index([
+	["subject.value",Mongo::ASCENDING],
+	["predicate.value",Mongo::ASCENDING]
+	])
 OUTPUT_PATH = "process/aat-hierarchy.json"
 ROOT = "http://vocab.getty.edu/aat/300015646" # "Styles and periods"
 
