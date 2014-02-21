@@ -3,7 +3,7 @@ require "json"
 
 AAT = Mongo::MongoClient.new["getty"]["aat_triples"]
 OUTPUT_PATH = "process/aat-hierarchy.json"
-ROOT = "http://vocab.getty.edu/aat/300111078" # "Styles, periods, and cultures by region"
+ROOT = "http://vocab.getty.edu/aat/300015646" # "Styles and periods"
 
 # Useful URIs
 GETTY_PREF_LABEL = "http://vocab.getty.edu/ontology#prefLabelGVP"
@@ -62,6 +62,6 @@ puts "Starting from #{ROOT}"
 aat_hash = get_hash(ROOT)
 print "Writing JSON..."
 File.open(OUTPUT_PATH,"w") do |f|
-	f.write(JSON.fast_generate(aat_hash))
+	f.write(JSON.pretty_generate(aat_hash))
 end
 puts "done."
