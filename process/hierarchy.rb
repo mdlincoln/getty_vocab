@@ -20,6 +20,8 @@ GETTY_PREF_LABEL = "http://vocab.getty.edu/ontology#prefLabelGVP"
 GETTY_LABEL_LITERAL = "http://vocab.getty.edu/ontology#term"
 GETTY_NARROWER = "http://vocab.getty.edu/ontology#narrower"
 
+$names = []
+
 # Get the literal name of a Getty term
 def get_label(object_uri)
 	label_triple = AAT.find_one({
@@ -45,13 +47,20 @@ def get_children(parent,array)
 		return array
 	else
 		children.each do |child|
-			array << get_hash(child["object"]["value"])
+			child_uri = child["object"]["value"]
+			# Avoid recursion loop by checking if object_uri has already been called
+			if $names.include?(child_uri)
+				return array
+			else
+				array << get_hash(child_uri)
+			end
 		end
 		return array
 	end
 end
 
 def get_hash(object_uri)
+	$names << object_uri
 	label = get_label(object_uri)
 	puts "#{label}, getting children"
 	children_array = get_children(object_uri,[])
