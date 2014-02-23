@@ -13,13 +13,14 @@ AAT.ensure_index([
 	["subject.value",Mongo::ASCENDING],
 	["predicate.value",Mongo::ASCENDING]
 	])
-OUTPUT_PATH = "process/aat-hierarchy.json"
-ROOT = "http://vocab.getty.edu/aat/300015646" # "Styles and periods"
 
 # Useful URIs
+BASE_URL = "http://vocab.getty.edu/aat/"
 GETTY_PREF_LABEL = "http://vocab.getty.edu/ontology#prefLabelGVP"
 GETTY_LABEL_LITERAL = "http://vocab.getty.edu/ontology#term"
 GETTY_NARROWER = "http://vocab.getty.edu/ontology#narrower"
+
+$names = []
 
 # Get the literal name of a Getty term
 def get_label(object_uri)
@@ -46,13 +47,20 @@ def get_children(parent,array)
 		return array
 	else
 		children.each do |child|
-			array << get_hash(child["object"]["value"])
+			child_uri = child["object"]["value"]
+			# Avoid recursion loop by checking if object_uri has already been called
+			if $names.include?(child_uri)
+				return array
+			else
+				array << get_hash(child_uri)
+			end
 		end
 		return array
 	end
 end
 
 def get_hash(object_uri)
+	$names << object_uri
 	label = get_label(object_uri)
 	puts "#{label}, getting children"
 	children_array = get_children(object_uri,[])
@@ -71,10 +79,7 @@ def get_hash(object_uri)
 	return object_hash
 end
 
-puts "Starting from #{ROOT}"
-aat_hash = get_hash(ROOT)
-print "Writing JSON..."
-File.open(OUTPUT_PATH,"w") do |f|
-	f.write(JSON.pretty_generate(aat_hash))
+def get_tree(root)
+	puts "Starting from #{root}"
+	return get_hash("#{BASE_URL}#{root}")
 end
-puts "done."
