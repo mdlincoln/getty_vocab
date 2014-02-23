@@ -15,6 +15,7 @@ AAT.ensure_index([
 	])
 
 # Useful URIs
+BASE_URL = "http://vocab.getty.edu/aat/"
 GETTY_PREF_LABEL = "http://vocab.getty.edu/ontology#prefLabelGVP"
 GETTY_LABEL_LITERAL = "http://vocab.getty.edu/ontology#term"
 GETTY_NARROWER = "http://vocab.getty.edu/ontology#narrower"
@@ -71,5 +72,5 @@ end
 
 def get_tree(root)
 	puts "Starting from #{root}"
-	return get_hash(root)
+	return get_hash("#{BASE_URL}#{root}")
 end
