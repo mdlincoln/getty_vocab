@@ -13,8 +13,6 @@ AAT.ensure_index([
 	["subject.value",Mongo::ASCENDING],
 	["predicate.value",Mongo::ASCENDING]
 	])
-OUTPUT_PATH = "process/aat-hierarchy.json"
-ROOT = "http://vocab.getty.edu/aat/300015646" # "Styles and periods"
 
 # Useful URIs
 GETTY_PREF_LABEL = "http://vocab.getty.edu/ontology#prefLabelGVP"
@@ -71,10 +69,7 @@ def get_hash(object_uri)
 	return object_hash
 end
 
-puts "Starting from #{ROOT}"
-aat_hash = get_hash(ROOT)
-print "Writing JSON..."
-File.open(OUTPUT_PATH,"w") do |f|
-	f.write(JSON.pretty_generate(aat_hash))
+def get_tree(root)
+	puts "Starting from #{root}"
+	return get_hash(root)
 end
-puts "done."
