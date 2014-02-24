@@ -21,6 +21,13 @@ GETTY_LABEL_LITERAL = "http://www.w3.org/2008/05/skos-xl#literalForm"
 GETTY_NARROWER = "http://vocab.getty.edu/ontology#narrower"
 
 $names = []
+ERROR_LOG_PATH = "import/error_log.txt"
+
+# Helper method for writing erros
+def log_error(string)
+	line = "#{Time.now}: #{string}"
+	File.open(ERROR_LOG_PATH, "a") { |f| f.puts line }
+end
 
 # Get the literal name of a Getty term
 def get_label(object_uri)
@@ -50,6 +57,7 @@ def get_children(parent,array)
 			child_uri = child["object"]["value"]
 			# Avoid recursion loop by checking if object_uri has already been called
 			if $names.include?(child_uri)
+				log_error("At #{parent}; child #{child['object']['value']} has already been assigned")
 				return array
 			else
 				array << get_hash(child_uri)
