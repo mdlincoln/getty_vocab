@@ -17,7 +17,7 @@ AAT.ensure_index([
 # Useful URIs
 BASE_URL = "http://vocab.getty.edu/aat/"
 GETTY_PREF_LABEL = "http://vocab.getty.edu/ontology#prefLabelGVP"
-GETTY_LABEL_LITERAL = "http://vocab.getty.edu/ontology#term"
+GETTY_LABEL_LITERAL = "http://www.w3.org/2008/05/skos-xl#literalForm"
 GETTY_NARROWER = "http://vocab.getty.edu/ontology#narrower"
 
 $names = []
