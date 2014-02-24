@@ -43,9 +43,9 @@ def get_label(object_uri)
 end
 
 # Recursive method to find narrower
-def get_children(parent,array)
+def get_children(parent_uri,array)
 	children = AAT.find({
-		"subject.value" => parent,
+		"subject.value" => parent_uri,
 		"predicate.value" => GETTY_NARROWER
 		})
 
