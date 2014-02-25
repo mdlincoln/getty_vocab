@@ -20,7 +20,19 @@ GETTY_PREF_LABEL = "http://vocab.getty.edu/ontology#prefLabelGVP"
 GETTY_LABEL_LITERAL = "http://www.w3.org/2008/05/skos-xl#literalForm"
 GETTY_NARROWER = "http://vocab.getty.edu/ontology#narrower"
 
-$names = []
+ERROR_LOG_PATH = "import/error_log.txt"
+
+# Nodes that end with recursion errors
+BAD_LOOPS = [
+	"http://vocab.getty.edu/aat/300263848", # motion picture components
+	"http://vocab.getty.edu/aat/300204952" # bedcovers
+]
+
+# Helper method for writing erros
+def log_error(string)
+	line = "#{Time.now}: #{string}"
+	File.open(ERROR_LOG_PATH, "a") { |f| f.puts line }
+end
 
 # Get the literal name of a Getty term
 def get_label(object_uri)
@@ -36,9 +48,9 @@ def get_label(object_uri)
 end
 
 # Recursive method to find narrower
-def get_children(parent,array)
+def get_children(parent_uri,array)
 	children = AAT.find({
-		"subject.value" => parent,
+		"subject.value" => parent_uri,
 		"predicate.value" => GETTY_NARROWER
 		})
 
@@ -48,8 +60,8 @@ def get_children(parent,array)
 	else
 		children.each do |child|
 			child_uri = child["object"]["value"]
-			# Avoid recursion loop by checking if object_uri has already been called
-			if $names.include?(child_uri)
+			if BAD_LOOPS.include?(child_uri)
+				log_error("Skipping #{child_uri} at #{array.to_s}")
 				return array
 			else
 				array << get_hash(child_uri)
@@ -60,7 +72,6 @@ def get_children(parent,array)
 end
 
 def get_hash(object_uri)
-	$names << object_uri
 	label = get_label(object_uri)
 	puts "#{label}, getting children"
 	children_array = get_children(object_uri,[])
