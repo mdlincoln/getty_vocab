@@ -20,8 +20,13 @@ GETTY_PREF_LABEL = "http://vocab.getty.edu/ontology#prefLabelGVP"
 GETTY_LABEL_LITERAL = "http://www.w3.org/2008/05/skos-xl#literalForm"
 GETTY_NARROWER = "http://vocab.getty.edu/ontology#narrower"
 
-$names = []
 ERROR_LOG_PATH = "import/error_log.txt"
+
+# Nodes that end with recursion errors
+BAD_LOOPS = [
+	"http://vocab.getty.edu/aat/300263848", # motion picture components
+	"http://vocab.getty.edu/aat/300204952" # bedcovers
+]
 
 # Helper method for writing erros
 def log_error(string)
@@ -55,9 +60,8 @@ def get_children(parent_uri,array)
 	else
 		children.each do |child|
 			child_uri = child["object"]["value"]
-			# Avoid recursion loop by checking if object_uri has already been called
-			if $names.include?(child_uri)
-				log_error("At #{parent}; child #{child['object']['value']} has already been assigned")
+			if BAD_LOOPS.include?(child_uri)
+				log_error("Skipping #{child_uri} at #{array.to_s}")
 				return array
 			else
 				array << get_hash(child_uri)
@@ -68,7 +72,6 @@ def get_children(parent_uri,array)
 end
 
 def get_hash(object_uri)
-	$names << object_uri
 	label = get_label(object_uri)
 	puts "#{label}, getting children"
 	children_array = get_children(object_uri,[])
