@@ -14,12 +14,25 @@ require "rdf"
 module RDF::Value
 	def is_type
 		if self.uri?
-			return "uri"
+			return :uri
 		elsif self.literal?
-			return "literal"
+			return :literal
 		else
-			return "resource"
+			return :resource
 		end
+	end
+end
+
+class RDF::Statement
+	def literal_hash()
+		return {
+			:s => self.subject.to_s,
+			:st => self.subject.is_type,
+			:p => self.predicate.to_s,
+			:pt => self.predicate.is_type,
+			:o => self.object.to_s,
+			:ot => self.object.is_type
+		}
 	end
 end
 
@@ -32,12 +45,7 @@ prog_bar = ProgressBar.create(:title => "Records imported", :starting_at => 0, :
 
 RDF::NTriples::Reader.open(FILE) do |reader|
 	reader.each_statement do |statement|
-		object = {
-				:subject => { :value => statement.subject.to_s, :type => statement.subject.is_type },
-				:predicate => { :value => statement.predicate.to_s, :type => statement.predicate.is_type},
-				:object => { :value => statement.object.to_s, :type => statement.object.is_type },
-			}
-		database.insert(object)
+		database.insert(statement.literal_hash)
 		prog_bar.increment
 	end
 end

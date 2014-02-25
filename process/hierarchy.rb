@@ -10,8 +10,8 @@ require "json"
 AAT = Mongo::MongoClient.new["getty"]["aat_triples"]
 puts "Creating subject/predicate compound index. This may take a while..."
 AAT.ensure_index([
-	["subject.value",Mongo::ASCENDING],
-	["predicate.value",Mongo::ASCENDING]
+	["s",Mongo::ASCENDING],
+	["p",Mongo::ASCENDING]
 	])
 
 # Useful URIs
@@ -25,21 +25,21 @@ $names = []
 # Get the literal name of a Getty term
 def get_label(object_uri)
 	label_triple = AAT.find_one({
-		"subject.value" => object_uri,
-		"predicate.value" => GETTY_PREF_LABEL
-		})["object"]["value"]
+		"s" => object_uri,
+		"p" => GETTY_PREF_LABEL
+		})["o"]
 	literal_label = AAT.find_one({
-		"subject.value" => label_triple,
-		"predicate.value" => GETTY_LABEL_LITERAL
-		})["object"]["value"]
+		"s" => label_triple,
+		"p" => GETTY_LABEL_LITERAL
+		})["o"]
 	return literal_label
 end
 
 # Recursive method to find narrower
 def get_children(parent,array)
 	children = AAT.find({
-		"subject.value" => parent,
-		"predicate.value" => GETTY_NARROWER
+		"s" => parent,
+		"p" => GETTY_NARROWER
 		})
 
 	# Return nil if no children
@@ -47,7 +47,7 @@ def get_children(parent,array)
 		return array
 	else
 		children.each do |child|
-			child_uri = child["object"]["value"]
+			child_uri = child["o"]
 			# Avoid recursion loop by checking if object_uri has already been called
 			if $names.include?(child_uri)
 				return array
