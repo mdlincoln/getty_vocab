@@ -36,16 +36,18 @@ class RDF::Statement
 	end
 end
 
-FILE = "AATOut_Full.nt"
-SIZE = 11613807
+DUMP_PATH = "full/"
+FILES = Dir.glob("#{DUMP_PATH}*.nt")
 database = Mongo::MongoClient.new["getty"]["aat_triples"]
+SIZE = `wc -l #{DUMP_PATH}*.nt`.split("\n").last.split.first.to_i
 
 prog_bar = ProgressBar.create(:title => "Records imported", :starting_at => 0, :total => SIZE, :format => '%c |%b>>%i| %p%% %e')	# => Create a progress bar
 
-
-RDF::NTriples::Reader.open(FILE) do |reader|
+FILES.each do |file|
+RDF::NTriples::Reader.open(file) do |reader|
 	reader.each_statement do |statement|
 		database.insert(statement.literal_hash)
 		prog_bar.increment
 	end
+end
 end
