@@ -22,16 +22,17 @@ GETTY_NARROWER = "http://vocab.getty.edu/ontology#narrower"
 
 ERROR_LOG_PATH = "import/error_log.txt"
 
-# Nodes that end with recursion errors
-BAD_LOOPS = [
-	"http://vocab.getty.edu/aat/300263848", # motion picture components
-	"http://vocab.getty.edu/aat/300204952" # bedcovers
-]
-
-# Helper method for writing erros
+# Helper method for writing errors
 def log_error(string)
 	line = "#{Time.now}: #{string}"
 	File.open(ERROR_LOG_PATH, "a") { |f| f.puts line }
+end
+
+# Helper method to avoid NilClass errors
+class NilClass
+	def [](* args)
+		return nil
+	end
 end
 
 # Get the literal name of a Getty term
@@ -60,12 +61,7 @@ def get_children(parent_uri,array)
 	else
 		children.each do |child|
 			child_uri = child["o"]
-			if BAD_LOOPS.include?(child_uri)
-				log_error("Skipping #{child_uri} at #{array.to_s}")
-				return array
-			else
-				array << get_hash(child_uri)
-			end
+			array << get_hash(child_uri)
 		end
 		return array
 	end
